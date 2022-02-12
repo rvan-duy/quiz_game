@@ -23,15 +23,16 @@ func formatData(data [][]string) []question {
 	return questions
 }
 
-func startAskingQuestions(questions []question) {
+func startAskingQuestions(questions []question) (questions_correct int) {
 	var user_answer string
 	for i, question := range questions {
 		fmt.Printf("Question %d: %s?\n", i + 1, question.question)
 		fmt.Scanln(&user_answer)
-		if user_answer != question.answer {
-			break
+		if user_answer == question.answer {
+			questions_correct++
 		}
 	}
+	return
 }
 
 func main() {
@@ -53,8 +54,10 @@ func main() {
 
 	// Parse user data into usable questions
 	questions := formatData(data)
+	
+	// Start asking user questions and keep track of the amount of correct answers
+	questions_correct := startAskingQuestions(questions)
 
-	startAskingQuestions(questions)
-
-	fmt.Println("Finish!")
+	fmt.Println("Done!")
+	fmt.Printf("You answered %d of %d questions correctly\n", questions_correct, len(questions))
 }
