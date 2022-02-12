@@ -23,6 +23,16 @@ func formatData(data [][]string) []question {
 	return questions
 }
 
+func startAskingQuestions(questions []question) {
+	var user_answer string
+	for i, question := range questions {
+		fmt.Printf("Question %d: %s?\n", i + 1, question.question)
+		fmt.Scanln(&user_answer)
+		if user_answer != question.answer {
+			break
+		}
+	}
+}
 
 func main() {
     
@@ -41,6 +51,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Parse user data into usable questions
 	questions := formatData(data)
-	fmt.Printf("%+v\n", questions)
+
+	startAskingQuestions(questions)
+
+	fmt.Println("Finish!")
 }
