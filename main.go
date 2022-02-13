@@ -8,6 +8,7 @@ import (
 	"time"
 	"context"
 	"flag"
+	"math/rand"
 )
 
 type question struct {
@@ -64,6 +65,7 @@ func main() {
     
 	// Check for timeout flag
 	var timeout_flag = flag.Int("timeout", 30, "Total amount of time for quiz")
+	var shuffle_flag = flag.Bool("shuffle", false, "If true, the questions shuffle before being asked")
 	flag.Parse()
 	if *timeout_flag > 0 {
 		timeout = time.Duration(*timeout_flag) * time.Second
@@ -83,6 +85,14 @@ func main() {
 	data, err := csvReader.ReadAll()
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	// Shuffle questions
+	if *shuffle_flag == true {
+		rand.Seed(time.Now().UnixNano())
+		rand.Shuffle(len(data), func(i, j int) {
+			data[i], data[j] = data[j], data[i]
+		})
 	}
 
 	// Parse user data into usable questions
