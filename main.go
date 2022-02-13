@@ -80,6 +80,14 @@ func main() {
 	// Parse user data into usable questions
 	questions := formatData(data)
 
+	// Explain information to user
+	var start string
+	fmt.Printf("Welcome to the Quiz Game! Can you answer all %d questions correctly in %d seconds?\n", len(questions), timeout / time.Second)
+	fmt.Println("Type [start] to continue")
+	for start != "start" {
+		fmt.Scanln(&start)
+	}
+
 	// Setup and start asking questions from the user
 	setupQuestions(questions)
 
