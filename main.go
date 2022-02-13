@@ -54,10 +54,11 @@ func main() {
 
 	// Parse user data into usable questions
 	questions := formatData(data)
-	
+
 	// Start asking user questions and keep track of the amount of correct answers
 	questions_correct := startAskingQuestions(questions)
 
+	// Print results
 	fmt.Println("Done!")
 	fmt.Printf("You answered %d of %d questions correctly\n", questions_correct, len(questions))
 }
