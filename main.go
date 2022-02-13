@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 	"context"
+	"flag"
 )
 
 type question struct {
@@ -14,7 +15,7 @@ type question struct {
 	answer string
 }
 
-const timeout = time.Second * 30
+var timeout time.Duration
 var questions_correct int
 
 func formatData(data [][]string) []question {
@@ -61,6 +62,13 @@ func startAskingQuestions(questions []question, channel chan int) {
 
 func main() {
     
+	// Check for timeout flag
+	var timeout_flag = flag.Int("timeout", 30, "Total amount of time for quiz")
+	flag.Parse()
+	if *timeout_flag > 0 {
+		timeout = time.Duration(*timeout_flag) * time.Second
+	}
+
 	// Open problems.csv
 	file, err := os.Open("problems.csv")
 	if err != nil {
