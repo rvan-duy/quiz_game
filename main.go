@@ -5,12 +5,17 @@ import (
 	"os"
 	"encoding/csv"
 	"log"
+	"time"
+	"context"
 )
 
 type question struct {
 	question string
 	answer string
 }
+
+const timeout = time.Second * 30
+var questions_correct int
 
 func formatData(data [][]string) []question {
 	var questions []question
@@ -23,8 +28,27 @@ func formatData(data [][]string) []question {
 	return questions
 }
 
-func startAskingQuestions(questions []question) (questions_correct int) {
+func setupQuestions(questions []question) {
+	channel := make(chan int)
+	ctx, cancelFunction := context.WithTimeout(context.Background(), timeout)
+	
+	go startAskingQuestions(questions, channel)
+	
+	select {
+	case <-ctx.Done():
+		fmt.Println("Time is up!")
+		cancelFunction()
+		return
+	case <-channel:
+		fmt.Println("That was the last question!")
+		cancelFunction()
+		return
+	}
+}
+
+func startAskingQuestions(questions []question, channel chan int) {
 	var user_answer string
+	
 	for i, question := range questions {
 		fmt.Printf("Question %d: %s?\n", i + 1, question.question)
 		fmt.Scanln(&user_answer)
@@ -32,7 +56,7 @@ func startAskingQuestions(questions []question) (questions_correct int) {
 			questions_correct++
 		}
 	}
-	return
+	channel <- 1
 }
 
 func main() {
@@ -46,6 +70,7 @@ func main() {
 	// Close file after main function is done
 	defer file.Close()
 
+	// Read csv file
 	csvReader := csv.NewReader(file)
 	data, err := csvReader.ReadAll()
 	if err != nil {
@@ -55,10 +80,9 @@ func main() {
 	// Parse user data into usable questions
 	questions := formatData(data)
 
-	// Start asking user questions and keep track of the amount of correct answers
-	questions_correct := startAskingQuestions(questions)
+	// Setup and start asking questions from the user
+	setupQuestions(questions)
 
 	// Print results
-	fmt.Println("Done!")
 	fmt.Printf("You answered %d of %d questions correctly\n", questions_correct, len(questions))
 }
