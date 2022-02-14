@@ -8,6 +8,7 @@ import (
 	"time"
 	"context"
 	"flag"
+	"strings"
 )
 
 type question struct {
@@ -53,6 +54,7 @@ func startAskingQuestions(questions []question, channel chan int) {
 	for i, question := range questions {
 		fmt.Printf("Question %d: %s?\n", i + 1, question.question)
 		fmt.Scanln(&user_answer)
+		user_answer = strings.ToLower(user_answer)
 		if user_answer == question.answer {
 			questions_correct++
 		}
